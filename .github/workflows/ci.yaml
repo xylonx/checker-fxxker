@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group:
+    ${{ github.workflow }}-${{ github.ref_name }}-${{
+    github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: "build image"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and export
+        uses: docker/build-push-action@v6
+        with:
+          file: Dockerfile
+          tags: checker-fxxker:latest
+          cache-from: type=gha,scope=checker-fxxker
+          cache-to: type=gha,mode=min,scope=checker-fxxker
+          outputs: type=docker,dest=/tmp/checker-fxxker.tar
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: checker-fxxker
+          path: /tmp/checker-fxxker.tar
