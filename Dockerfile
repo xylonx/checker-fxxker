@@ -21,4 +21,4 @@ COPY --from=builder --chown=app:app /app /app
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-CMD ["python","main.py", "/app/config.yaml"]
+CMD ["python","/app/main.py", "/app/config.yaml"]
