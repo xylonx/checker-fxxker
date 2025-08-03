@@ -6,7 +6,14 @@ from src.sites import hanime, p1a3, soushuba, southplus
 
 
 @dataclass
+class ApplicationConfig:
+    db_uri: str
+    log_file: str
+
+
+@dataclass
 class Config:
+    application: ApplicationConfig
     hanime: hanime.Config
     soushu: soushuba.Config
     southplus: southplus.Config
