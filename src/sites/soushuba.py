@@ -1,4 +1,3 @@
-import logging
 import re
 import time
 import xml.etree.ElementTree as ET
@@ -8,6 +7,8 @@ from typing import Optional, Tuple
 import requests
 from bs4 import BeautifulSoup
 from urllib3.util import Url, parse_url
+
+from src.utils import logging
 
 
 @dataclass
@@ -139,7 +140,7 @@ def space(s: requests.Session, url: Url):
             verify=False,
         )
         if re.search("操作成功", resp.text):
-            logger.info(f"Post {x + 1}nd successfully!")
+            logger.notice(f"Post {x + 1}nd successfully!")
             time.sleep(120)
         else:
             logger.warning(f"Post {x + 1}nd failed!")
@@ -172,6 +173,6 @@ def checkin(config: Config):
         login(s, actual_url, config.username, config.password)
         space(s, actual_url)
         cred = credit(s, actual_url)
-        logger.info(f"{config.username} have {cred} coins!")
+        logger.notice(f"{config.username} have {cred} coins!")
     except BaseException as e:
         logger.error(f"Failed to checkin: {e}")

@@ -1,11 +1,12 @@
 import json
-import logging
 import time
 from dataclasses import dataclass
 from hashlib import sha256
 
 import requests
 from dateutil import parser
+
+from src.utils import logging
 
 HOST = "https://www.universal-cdn.com"
 
@@ -98,7 +99,7 @@ def getCoins(s: requests.Session, version, uid):
 
     if '{"errors":["Unauthorized"]}' in response.text:
         raise SystemExit("[!!!] Something went wrong, please report issue on github")
-    logger.info(f"You received {json.loads(response.text)['rewarded_amount']} coins.")
+    logger.notice(f"You received {json.loads(response.text)['rewarded_amount']} coins.")
 
 
 def checkin(config: Config):
@@ -110,7 +111,7 @@ def checkin(config: Config):
         s.headers.update({"X-Session-Token": info["session_token"]})
 
         logger.info(f"[*] Logged in as {info['name']}")
-        logger.info(f"[*] Coins count: {info['coins']}")
+        logger.notice(f"[*] Coins count: {info['coins']}")
 
         if info["last_clicked"] is not None:
             logger.info(

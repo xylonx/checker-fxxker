@@ -1,5 +1,4 @@
 import json
-import logging
 import random
 import time
 from dataclasses import dataclass
@@ -8,6 +7,7 @@ from typing import Tuple
 import requests
 from twocaptcha import TwoCaptcha
 
+from src.utils import logging
 from src.utils.cookie import session_from_cookie_str
 
 CF_CAPCHA_SITE_KEY = "0x4AAAAAAAA6iSaNNPWafmlz"
@@ -65,7 +65,7 @@ def daily_checkin(
         raise Exception(f"Failed to checkin: {response.text}")
 
     resp_json = json.loads(response.text)
-    logger.info(f"{resp_json['msg']}")
+    logger.notice(f"{resp_json['msg']}")
 
 
 def answer_daily_question(
@@ -99,7 +99,7 @@ def answer_daily_question(
 
     result = json.loads(response.text)
     if result["errno"] == 0:
-        logger.info(result["msg"])
+        logger.notice(result["msg"])
     elif result["msg"] == "您今天已经答过题了":
         logger.warning("You have already answered the question today")
     else:
@@ -116,7 +116,6 @@ def get_daily_task_answer(
 
     resp_json = json.loads(response.text)
     if resp_json["errno"] != 0 or resp_json["msg"] != "OK":
-        logger.info(response.text)
         raise ValueError(f"Failed to retrieve daily task: {response.text}")
 
     # resolve the json response

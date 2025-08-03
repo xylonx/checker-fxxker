@@ -1,16 +1,14 @@
 import argparse
-import logging
-import sys
 
 from apscheduler.executors.pool import ProcessPoolExecutor, ThreadPoolExecutor
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
-from notifiers.logging import NotificationHandler
 
 from src.config import Config, parse_config
 from src.sites import hanime, p1a3, soushuba, southplus
+from src.utils.logging import setup_logging
 
 
 def schedule(config: Config):
@@ -70,37 +68,6 @@ def schedule(config: Config):
     )
 
     return scheduler
-
-
-def setup_logging(config: Config):
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-
-    # stdout
-    console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setFormatter(formatter)
-
-    # log file
-    file_handler = logging.FileHandler(config.application.log_file)
-    file_handler.setFormatter(formatter)
-
-    # notifier
-    tg_handler = NotificationHandler(
-        "telegram",
-        defaults={
-            "token": config.notification.telegram.token,
-            "chat_id": config.notification.telegram.chat_id,
-        },
-    )
-    tg_handler.setFormatter(formatter)
-
-    root_logger = logging.getLogger()
-    root_logger.setLevel(logging.INFO)
-
-    root_logger.addHandler(console_handler)
-    root_logger.addHandler(file_handler)
-    root_logger.addHandler(tg_handler)
 
 
 if __name__ == "__main__":
