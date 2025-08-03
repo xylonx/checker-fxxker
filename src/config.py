@@ -3,29 +3,18 @@ from dataclasses import dataclass
 import mashumaro.codecs.yaml as yaml_codec
 
 from src.sites import hanime, p1a3, soushuba, southplus
+from src.utils import logging
 
 
 @dataclass
 class ApplicationConfig:
     db_uri: str
-    log_file: str
-
-
-@dataclass
-class TelegramNotificationConfig:
-    token: str
-    chat_id: str
-
-
-@dataclass
-class NotificationConfig:
-    telegram: TelegramNotificationConfig
+    logging: logging.Config
 
 
 @dataclass
 class Config:
     application: ApplicationConfig
-    notification: NotificationConfig
     hanime: hanime.Config
     soushu: soushuba.Config
     southplus: southplus.Config

@@ -1,11 +1,22 @@
 import logging
 import sys
+from dataclasses import dataclass
 
 from notifiers.logging import NotificationHandler
 
-from src.config import Config
-
 NOTICE = logging.DEBUG
+
+
+@dataclass
+class TelegramNotificationConfig:
+    token: str
+    chat_id: str
+
+
+@dataclass
+class Config:
+    filename: str
+    telegram: TelegramNotificationConfig
 
 
 class MyLogger(logging.Logger):
@@ -27,15 +38,15 @@ def setup_logging(config: Config):
     console_handler.setFormatter(formatter)
 
     # log file
-    file_handler = logging.FileHandler(config.application.log_file)
+    file_handler = logging.FileHandler(config.filename)
     file_handler.setFormatter(formatter)
 
     # notifier
     tg_handler = NotificationHandler(
         "telegram",
         defaults={
-            "token": config.notification.telegram.token,
-            "chat_id": config.notification.telegram.chat_id,
+            "token": config.telegram.token,
+            "chat_id": config.telegram.chat_id,
         },
     )
     tg_handler.setFormatter(formatter)

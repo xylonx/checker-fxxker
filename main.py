@@ -78,7 +78,7 @@ if __name__ == "__main__":
     with open(args.config) as f:
         config = parse_config(f.read())
 
-        setup_logging(config)
+        setup_logging(config.application.logging)
 
         scheduler = schedule(config)
         scheduler.start()
