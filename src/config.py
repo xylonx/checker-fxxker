@@ -12,8 +12,20 @@ class ApplicationConfig:
 
 
 @dataclass
+class TelegramNotificationConfig:
+    token: str
+    chat_id: str
+
+
+@dataclass
+class NotificationConfig:
+    telegram: TelegramNotificationConfig
+
+
+@dataclass
 class Config:
     application: ApplicationConfig
+    notification: NotificationConfig
     hanime: hanime.Config
     soushu: soushuba.Config
     southplus: southplus.Config
