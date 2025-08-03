@@ -85,6 +85,4 @@ if __name__ == "__main__":
         )
 
         scheduler = schedule(config)
-
-        hanime.checkin(config.hanime)
         scheduler.start()
