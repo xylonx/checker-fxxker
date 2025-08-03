@@ -20,8 +20,6 @@ class Config:
 
 REDIRECT_RE = re.compile(r'url=(.+)">')
 
-logger = logging.getLogger("[搜书吧]")
-
 
 def get_redirect_url(index_url: str) -> str:
     response = requests.get(index_url, verify=False)
@@ -76,6 +74,7 @@ def common_header(url: Url):
 
 def login(
     s: requests.Session,
+    logger: logging.MyLogger,
     url: Url,
     username: str,
     password: str,
@@ -119,7 +118,7 @@ def space_form_hash(s: requests.Session, url: Url) -> str:
     raise ValueError("Failed to find space form hash")
 
 
-def space(s: requests.Session, url: Url):
+def space(s: requests.Session, logger: logging.MyLogger, url: Url):
     form_hash = space_form_hash(s, url)
 
     headers = common_header(url)
@@ -166,12 +165,14 @@ def credit(s: requests.Session, url: Url) -> str:
 
 
 def checkin(config: Config):
+    logger = logging.getLogger("[搜书吧]")
+
     try:
         s = requests.Session()
         actual_url = get_actual_url(config.permenant_url)
         actual_url = parse_url(actual_url)
-        login(s, actual_url, config.username, config.password)
-        space(s, actual_url)
+        login(s, logger, actual_url, config.username, config.password)
+        space(s, logger, actual_url)
         cred = credit(s, actual_url)
         logger.notice(f"{config.username} have {cred} coins!")
     except BaseException as e:

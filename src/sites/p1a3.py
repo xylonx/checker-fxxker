@@ -20,8 +20,6 @@ POST_QUESTION_URL = "https://api.1point3acres.com/api/daily_questions"
 
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 
-logger = logging.getLogger("[一亩三分地]")
-
 
 @dataclass
 class Config:
@@ -39,6 +37,7 @@ def common_header():
 
 def daily_checkin(
     s: requests.Session,
+    logger: logging.MyLogger,
     solver: TwoCaptcha,
 ):
     result = solver.turnstile(
@@ -70,6 +69,7 @@ def daily_checkin(
 
 def answer_daily_question(
     s: requests.Session,
+    logger: logging.MyLogger,
     solver: TwoCaptcha,
     question: int,
     answer: int,
@@ -108,6 +108,7 @@ def answer_daily_question(
 
 def get_daily_task_answer(
     s: requests.Session,
+    logger: logging.MyLogger,
 ) -> Tuple[int, int]:
     logger.info("Get daily question from 1point3acres")
 
@@ -148,14 +149,15 @@ def get_daily_task_answer(
 
 
 def checkin(config: Config):
+    logger = logging.getLogger("[一亩三分地]")
     try:
         s = session_from_cookie_str(config.cookie)
         solver = TwoCaptcha(config.two_captcha_api_key)
 
-        daily_checkin(s, solver)
-        question_id, answer_id = get_daily_task_answer(s)
+        daily_checkin(s, logger, solver)
+        question_id, answer_id = get_daily_task_answer(s, logger)
         time.sleep(random.uniform(1, 50))
-        answer_daily_question(s, solver, question_id, answer_id)
+        answer_daily_question(s, logger, solver, question_id, answer_id)
 
     except BaseException as e:
         logger.error(f"Failed to checkin: {e}")

@@ -10,8 +10,6 @@ from src.utils import logging
 
 HOST = "https://www.universal-cdn.com"
 
-logger = logging.getLogger("[Hanime]")
-
 
 @dataclass
 class Config:
@@ -80,7 +78,7 @@ def getInfo(response):
     return ret
 
 
-def getCoins(s: requests.Session, version, uid):
+def getCoins(s: requests.Session, logger: logging.MyLogger, version, uid):
     """
     Send a request to claim your coins, this request is forged and we are not actually clicking the ad.
     Again, reverse engineering the mechanism of generating the reward token wasn't much obfuscated.
@@ -98,11 +96,13 @@ def getCoins(s: requests.Session, version, uid):
     response = s.post(f"{HOST}/rapi/v4/coins", data=data)
 
     if '{"errors":["Unauthorized"]}' in response.text:
-        raise SystemExit("[!!!] Something went wrong, please report issue on github")
+        raise ValueError("[!!!] Something went wrong, please report issue on github")
     logger.notice(f"You received {json.loads(response.text)['rewarded_amount']} coins.")
 
 
 def checkin(config: Config):
+    logger = logging.getLogger("[Hanime]")
+
     try:
         s = requests.Session()
 
@@ -126,7 +126,7 @@ def checkin(config: Config):
         else:
             logger.warning("[*] Never clicked on an ad")
 
-        getCoins(s, info["version"], info["uid"])
+        getCoins(s, logger, info["version"], info["uid"])
 
     except BaseException as e:
         logger.error(f"Checkin failed. {e}")

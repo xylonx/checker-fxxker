@@ -9,9 +9,6 @@ from bs4 import BeautifulSoup
 from src.utils import logging
 from src.utils.cookie import session_from_cookie_str
 
-dailyLogger = logging.getLogger("[SouthPlus][日常]")
-weeklyLogger = logging.getLogger("[SouthPlus][周常]")
-
 
 @dataclass
 class Config:
@@ -64,7 +61,7 @@ def get_sp(s: requests.Session) -> str:
 
 
 # Daily
-def daily_apply(s: requests.Session, verify: str):
+def daily_apply(s: requests.Session, logger: logging.MyLogger, verify: str):
     headers = common_header()
     headers["referrer"] = "https://www.south-plus.net/plugin.php?H_name-tasks.html"
     headers["sec-fetch-dest"] = "iframe"
@@ -89,12 +86,12 @@ def daily_apply(s: requests.Session, verify: str):
 
     root = ET.fromstring(response)
     if cdata := root.text:
-        dailyLogger.notice(f"{cdata}")
+        logger.notice(f"{cdata}")
     else:
         raise ValueError("Failed to apply daily task")
 
 
-def daily_collect(s: requests.Session, verify: str):
+def daily_collect(s: requests.Session, logger: logging.MyLogger, verify: str):
     headers = common_header()
     headers["sec-fetch-dest"] = "iframe"
     headers["sec-fetch-mode"] = "navigate"
@@ -118,27 +115,28 @@ def daily_collect(s: requests.Session, verify: str):
 
     root = ET.fromstring(response)
     if cdata := root.text:
-        dailyLogger.notice(f"{cdata}")
+        logger.notice(f"{cdata}")
     else:
         raise ValueError("Failed to collect daily task")
 
 
 def daily_checkin(config: Config):
+    logger = logging.getLogger("[SouthPlus][日常]")
     try:
         s = session_from_cookie_str(config.cookie)
         verify = get_verify_hash(s)
-        daily_apply(s, verify)
-        daily_collect(s, verify)
+        daily_apply(s, logger, verify)
+        daily_collect(s, logger, verify)
         sp = get_sp(s)
-        dailyLogger.notice(f"Current SP: {sp}")
+        logger.notice(f"Current SP: {sp}")
     except BaseException as err:
-        dailyLogger.error(f"Failed to checkin: {err}")
+        logger.error(f"Failed to checkin: {err}")
 
 
 # Weekly
 
 
-def weekly_apply(s: requests.Session, verify: str):
+def weekly_apply(s: requests.Session, logger: logging.MyLogger, verify: str):
     headers = common_header()
     headers["referrer"] = "https://www.south-plus.net/plugin.php?H_name-tasks.html"
     headers["sec-fetch-dest"] = "iframe"
@@ -163,12 +161,12 @@ def weekly_apply(s: requests.Session, verify: str):
 
     root = ET.fromstring(response)
     if cdata := root.text:
-        weeklyLogger.notice(f"{cdata}")
+        logger.notice(f"{cdata}")
     else:
         raise ValueError("Failed to apply daily task")
 
 
-def weekly_collect(s: requests.Session, verify: str):
+def weekly_collect(s: requests.Session, logger: logging.MyLogger, verify: str):
     headers = common_header()
     headers["sec-fetch-dest"] = "iframe"
     headers["sec-fetch-mode"] = "navigate"
@@ -192,18 +190,19 @@ def weekly_collect(s: requests.Session, verify: str):
 
     root = ET.fromstring(response.text)
     if cdata := root.text:
-        weeklyLogger.notice(f"{cdata}")
+        logger.notice(f"{cdata}")
     else:
         raise ValueError("Failed to collect daily task")
 
 
 def weekly_checkin(config: Config):
+    logger = logging.getLogger("[SouthPlus][周常]")
     try:
         s = session_from_cookie_str(config.cookie)
         verify = get_verify_hash(s)
-        weekly_apply(s, verify)
-        weekly_collect(s, verify)
+        weekly_apply(s, logger, verify)
+        weekly_collect(s, logger, verify)
         sp = get_sp(s)
-        weeklyLogger.notice(f"Current SP: {sp}")
+        logger.notice(f"Current SP: {sp}")
     except BaseException as err:
-        weeklyLogger.error(f"Failed to checkin: {err}")
+        logger.error(f"Failed to checkin: {err}")
