@@ -13,6 +13,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  ruff-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/ruff-action@v3
+
   build:
     name: "build image"
     runs-on: ubuntu-latest
