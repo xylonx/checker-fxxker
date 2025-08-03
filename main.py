@@ -92,7 +92,6 @@ def setup_logging(config: Config):
             "token": config.notification.telegram.token,
             "chat_id": config.notification.telegram.chat_id,
         },
-        raise_on_errors=False,
     )
     tg_handler.setFormatter(formatter)
 
