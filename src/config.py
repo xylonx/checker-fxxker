@@ -9,6 +9,7 @@ from src.utils import logging
 @dataclass
 class ApplicationConfig:
     db_uri: str
+    timezone: str
     logging: logging.Config
 
 
