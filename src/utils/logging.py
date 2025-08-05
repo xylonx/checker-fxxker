@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from notifiers.logging import NotificationHandler
 
-NOTICE = logging.ERROR
+NOTICE = 41
 
 
 @dataclass
