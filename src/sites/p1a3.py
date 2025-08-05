@@ -160,7 +160,7 @@ def checkin(config: Config):
         answer_daily_question(s, logger, solver, question_id, answer_id)
 
     except BaseException as e:
-        logger.error(f"Failed to checkin: {e}")
+        logger.error(f"Failed to checkin: {e:.50}")
 
 
 questions = {

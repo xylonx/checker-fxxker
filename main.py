@@ -62,7 +62,7 @@ def schedule(config: Config):
     scheduler.add_job(
         p1a3.checkin,
         kwargs={"config": config.p1a3},
-        trigger=CronTrigger(hour=10, minute=14, timezone=config.application.timezone),
+        trigger=CronTrigger(hour=6, minute=14, timezone=config.application.timezone),
         id="p1a3",
         replace_existing=True,
     )
